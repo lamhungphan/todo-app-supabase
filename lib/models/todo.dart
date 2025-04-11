@@ -13,6 +13,16 @@ class Todo {
     required this.createdAt,
   });
 
+  Todo toggleCompletion() {
+    return Todo(
+      id: id,
+      userId: userId,
+      task: task,
+      isCompleted: !isCompleted,
+      createdAt: createdAt,
+    );
+  }
+
   factory Todo.fromJson(Map<String, dynamic> json) {
     return Todo(
       id: json['id'].toString(),
