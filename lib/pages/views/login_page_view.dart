@@ -5,21 +5,9 @@ import 'package:todo_supabase/bloc/login_bloc/login_event.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_state.dart';
 import 'package:todo_supabase/pages/forgot_pass_page.dart';
 import 'package:todo_supabase/pages/forgot_pass_verify_page.dart';
-import 'package:todo_supabase/pages/home_page.dart';
-import 'package:todo_supabase/pages/reset_pass_page%20copy.dart';
-import 'package:todo_supabase/pages/signup_page.dart';
-
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LoginBloc(),
-      child: LoginScreenView(),
-    );
-  }
-}
+import 'package:todo_supabase/pages/wrapper/home_page.dart';
+import 'package:todo_supabase/pages/reset_pass_page.dart';
+import 'package:todo_supabase/pages/views/signup_page.dart';
 
 class LoginScreenView extends StatefulWidget {
   const LoginScreenView({super.key});
@@ -31,6 +19,7 @@ class LoginScreenView extends StatefulWidget {
 class _LoginScreenViewState extends State<LoginScreenView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   Future<void> _signIn() async {
     final email = _emailController.text.trim();
@@ -92,9 +81,24 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                   TextField(
                     controller: _passwordController,
                     style: const TextStyle(color: Colors.white),
+                    obscureText: _obscureText,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: TextStyle(color: Colors.white),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                            if (_obscureText) {}
+                          });
+                        },
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
@@ -102,8 +106,6 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                         borderSide: BorderSide(color: Colors.blue),
                       ),
                     ),
-
-                    obscureText: true,
                   ),
                   SizedBox(height: 20),
                   state.status == LoginStatus.loading

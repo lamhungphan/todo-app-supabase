@@ -12,7 +12,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<AddTodo>(_onAddTodo);
     on<DeleteTodo>(_onDeleteTodo);
     on<ToggleTodo>(_onToggleTodo);
-    add(LoadTodos());
   }
 
   Future<void> _onLoadTodos(LoadTodos event, Emitter<TodoState> emit) async {

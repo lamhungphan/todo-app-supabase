@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_supabase/auth_wrapper.dart';
+import 'package:todo_supabase/pages/wrapper/auth_wrapper.dart';
 
 // scalable
 class MyApp extends StatelessWidget {

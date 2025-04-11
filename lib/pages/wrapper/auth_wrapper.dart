@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_supabase/pages/login_page.dart';
+import 'package:todo_supabase/pages/wrapper/login_page.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_bloc.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_event.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_state.dart';
-import 'package:todo_supabase/pages/home_page.dart';
+import 'package:todo_supabase/pages/wrapper/home_page.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
