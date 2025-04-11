@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_bloc.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_event.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_state.dart';
+import 'package:todo_supabase/pages/forgot_pass_page.dart';
+import 'package:todo_supabase/pages/forgot_pass_verify_page.dart';
 import 'package:todo_supabase/pages/home_page.dart';
+import 'package:todo_supabase/pages/reset_pass_page%20copy.dart';
 import 'package:todo_supabase/pages/signup_page.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -18,7 +20,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-// listener, builder, consumer
 
 class LoginScreenView extends StatefulWidget {
   const LoginScreenView({super.key});
@@ -30,14 +31,19 @@ class LoginScreenView extends StatefulWidget {
 class _LoginScreenViewState extends State<LoginScreenView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _supabase = Supabase.instance.client;
-
-  bool _isLoading = false;
 
   Future<void> _signIn() async {
-    context.read<LoginBloc>().add(
-      Login(email: _emailController.text, password: _passwordController.text),
-    );
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email and password cannot be empty')),
+      );
+      return;
+    }
+
+    context.read<LoginBloc>().add(Login(email: email, password: password));
   }
 
   @override
@@ -57,41 +63,102 @@ class _LoginScreenViewState extends State<LoginScreenView> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: Text('Supabase Todo')),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                ),
-                SizedBox(height: 20),
-                // chi boc bloc builder o nhung cho can build
-                state.status == LoginStatus.loading
-                    ? CircularProgressIndicator()
-                    : ElevatedButton(
-                      onPressed: _signIn,
-                      child: Text('Sign In'),
-                    ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignupScreen(),
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            title: Text('Supabase Todo'),
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
                       ),
-                    );
-                  },
-                  child: const Text("Don't have an account? Sign Up"),
-                ),
-              ],
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  TextField(
+                    controller: _passwordController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 20),
+                  state.status == LoginStatus.loading
+                      ? CircularProgressIndicator()
+                      : ElevatedButton(
+                        onPressed: _signIn,
+                        child: Text('Sign In'),
+                      ),
+                  SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignupScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Don't have an account? Sign Up"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPassPage(),
+                        ),
+                      );
+                    },
+                    child: const Text("Forgot password?"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPassVerifyPage(),
+                        ),
+                      );
+                    },
+                    child: const Text("Verify forgot password?"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ResetPassPage(),
+                        ),
+                      );
+                    },
+                    child: const Text("Reset password?"),
+                  ),
+                ],
+              ),
             ),
           ),
         );

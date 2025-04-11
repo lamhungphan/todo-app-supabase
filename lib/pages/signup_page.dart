@@ -32,6 +32,10 @@ class _SignupScreenViewState extends State<SignupScreenView> {
   bool _isLoading = false;
 
   Future<void> _signUp() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
     setState(() {
       _isLoading = true;
     });
@@ -42,10 +46,31 @@ class _SignupScreenViewState extends State<SignupScreenView> {
         password: _passwordController.text.trim(),
       );
 
+      if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please fill up you information')),
+        );
+        return;
+      }
+
+      if (!email.contains('@')) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Invalid email')));
+        return;
+      }
+
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Password and Confirm password do not match')));
+        return;
+      }
+
       if (response.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign up successful! Please check your email.'),
+            content: Text('Sign up successful! Please check your email'),
           ),
         );
       }
@@ -60,55 +85,86 @@ class _SignupScreenViewState extends State<SignupScreenView> {
     }
   }
 
+ void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignupBloc, SignupState>(
       listener: (context, state) {
         if (state.status == SignupStatus.success) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Đăng ký thành công!")));
+          _showMessage("Đăng ký thành công! Vui lòng kiểm tra email");
         } else if (state.status == SignupStatus.failure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Đăng ký thất bại!")));
+          _showMessage("Đăng ký thất bại!");
         }
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text("Đăng ký")),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: "Email"),
-                ),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: "Mật khẩu"),
-                ),
-                TextField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Xác nhận mật khẩu",
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            title: const Text("Đăng ký"),
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+          body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Email",
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed:
-                      state.status == SignupStatus.loading
-                          ? null
-                          : _signUp,
-                  child:
-                      state.status == SignupStatus.loading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("Đăng ký"),
-                ),
-              ],
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Mật khẩu",
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: "Xác nhận mật khẩu",
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  state.status == SignupStatus.loading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: _signUp,
+                          child: const Text("Đăng ký"),
+                        ),
+                ],
+              ),
             ),
           ),
         );

@@ -5,7 +5,7 @@ class SignupState {
 
   SignupState({required this.status});
 
-  SignupState copyWith({SignupStatus? status}) {
+  SignupState copyWith({SignupStatus? status, required String error}) {
     return SignupState(status: status ?? this.status);
   }
 }
