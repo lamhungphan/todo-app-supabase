@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_password_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_password_event.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_password_state.dart';
 
-class ForgotPassPage extends StatefulWidget {
-  const ForgotPassPage({super.key});
+class ForgotPassScreen extends StatelessWidget {
+  const ForgotPassScreen({super.key});
 
   @override
-  State<ForgotPassPage> createState() => _ForgotPassPageState();
+  Widget build(BuildContext context) {
+    return ForgotPassScreenView();
+  }
 }
 
-class _ForgotPassPageState extends State<ForgotPassPage> {
+class ForgotPassScreenView extends StatefulWidget {
+  const ForgotPassScreenView({super.key});
+
+  @override
+  State<ForgotPassScreenView> createState() => _ForgotPassScreenViewState();
+}
+
+class _ForgotPassScreenViewState extends State<ForgotPassScreenView> {
   final _forgotPassController = TextEditingController();
 
   @override
@@ -30,6 +43,7 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
       body: Center(
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
                 'Forgot Password',
@@ -53,29 +67,78 @@ class _ForgotPassPageState extends State<ForgotPassPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              FilledButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all<Color>(
-                    const Color.fromARGB(255, 6, 33, 185),
-                  ),
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  padding: WidgetStateProperty.all<EdgeInsets>(
-                    EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              SizedBox(height: 50),
+              BlocConsumer<ForgotPasswordBloc, PasswordState>(
+                listener: (context, state) {
+                  if (state.status == PasswordStatus.loading) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => const AlertDialog(
+                            content: Row(
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(width: 10),
+                                Text("Sending reset link..."),
+                              ],
+                            ),
+                          ),
+                    );
+                  } else if (state.status == PasswordStatus.success) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Password reset email sent")),
+                    );
+                  } else if (state.status == PasswordStatus.failure) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.errorMessage ?? "Unknown error"),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return FilledButton(
+                    onPressed: () {
+                      final email = _forgotPassController.text.trim();
+                      if (email.isNotEmpty) {
+                        context.read<ForgotPasswordBloc>().add(
+                          ForgotPasswordEmailChanged(email),
+                        );
+                        context.read<ForgotPasswordBloc>().add(
+                          ForgotPasswordSubmitted(),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Please enter a valid email")),
+                        );
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        const Color.fromARGB(255, 6, 33, 185),
+                      ),
+                      foregroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white,
+                      ),
+                      padding: WidgetStateProperty.all<EdgeInsets>(
+                        EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                child: const SizedBox(
-                  width: 300,
-                  child: Center(
-                    child: Text('Submit', style: TextStyle(fontSize: 18)),
-                  ),
-                ),
+                    child: const SizedBox(
+                      width: 300,
+                      child: Center(
+                        child: Text('Submit', style: TextStyle(fontSize: 18)),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

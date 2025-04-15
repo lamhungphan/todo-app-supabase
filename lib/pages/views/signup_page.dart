@@ -29,12 +29,11 @@ class _SignupScreenViewState extends State<SignupScreenView> {
   final _confirmPasswordController = TextEditingController();
   final _supabase = Supabase.instance.client;
 
-  bool _isLoading = false;
-
   Future<void> _signUp() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
+    bool _isLoading = false;
 
     setState(() {
       _isLoading = true;
@@ -61,9 +60,9 @@ class _SignupScreenViewState extends State<SignupScreenView> {
       }
 
       if (password != confirmPassword) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Password and Confirm password do not match')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password and Confirm password do not match')),
+        );
         return;
       }
 
@@ -85,8 +84,10 @@ class _SignupScreenViewState extends State<SignupScreenView> {
     }
   }
 
- void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -160,9 +161,9 @@ class _SignupScreenViewState extends State<SignupScreenView> {
                   state.status == SignupStatus.loading
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
-                          onPressed: _signUp,
-                          child: const Text("Đăng ký"),
-                        ),
+                        onPressed: _signUp,
+                        child: const Text("Đăng ký"),
+                      ),
                 ],
               ),
             ),

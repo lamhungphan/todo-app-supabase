@@ -131,7 +131,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgotPassPage(),
+                          builder: (context) => const ForgotPassScreenView(),
                         ),
                       );
                     },

@@ -1,85 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/reset_password_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/reset_password_event.dart';
+import 'package:todo_supabase/bloc/password_bloc/reset_password_state.dart';
 
 class ForgotPassVerifyPage extends StatefulWidget {
-  const ForgotPassVerifyPage({super.key});
+  final String? token;
+  const ForgotPassVerifyPage({super.key, this.token});
 
   @override
   State<ForgotPassVerifyPage> createState() => _ForgotPassVerifyPageState();
 }
 
 class _ForgotPassVerifyPageState extends State<ForgotPassVerifyPage> {
-  final _forgotPassController = TextEditingController();
+  final _passController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Nếu có token, gửi event cho bloc
+    final token = widget.token;
+    if (token != null && token.isNotEmpty) {
+      context.read<ResetPasswordBloc>().add(TokenReceived(token));
+    }
+  }
+
+  @override
+  void dispose() {
+    _passController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text("Reset Password"),
         backgroundColor: Colors.black,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.blueAccent,
-            size: 40,
-          ),
-        ),
       ),
       backgroundColor: Colors.black,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Text(
-                'Forgot Password',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  controller: _forgotPassController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your code send to your email',
-                    labelText: 'Verify OTP code',
-                    labelStyle: TextStyle(color: Colors.white, fontSize: 20),
-                    border: OutlineInputBorder(),
+      body: BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
+        listener: (context, state) {
+          if (state.status == ResetStatus.success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Password reset successful")),
+            );
+          } else if (state.status == ResetStatus.failure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text("Failed to reset password")));
+          }
+        },
+        builder: (context, state) {
+          return Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text(
+                    "Enter your new password",
+                    style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
-                ),
-              ),
-              SizedBox(height: 20),
-              FilledButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all<Color>(
-                    const Color.fromARGB(255, 6, 33, 185),
-                  ),
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  padding: WidgetStateProperty.all<EdgeInsets>(
-                    EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  SizedBox(height: 16),
+                  SizedBox(
+                    width: 300,
+                    child: TextField(
+                      controller: _passController,
+                      onChanged:
+                          (value) => context.read<ResetPasswordBloc>().add(
+                            PasswordChanged(value),
+                          ),
+                      obscureText: true,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: "New Password",
+                        labelStyle: TextStyle(color: Colors.white),
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
-                child: const SizedBox(
-                  width: 300,
-                  child: Center(
-                    child: Text('Submit', style: TextStyle(fontSize: 18)),
+                  SizedBox(height: 24),
+                  FilledButton(
+                    onPressed:
+                        state.status == ResetStatus.loading
+                            ? null
+                            : () => context.read<ResetPasswordBloc>().add(
+                              SubmitNewPassword(),
+                            ),
+                    child: SizedBox(
+                      width: 300,
+                      child: Center(
+                        child:
+                            state.status == ResetStatus.loading
+                                ? CircularProgressIndicator(color: Colors.white)
+                                : Text(
+                                  "Submit",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

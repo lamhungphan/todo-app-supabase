@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_password_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/reset_password_bloc.dart';
 import 'package:todo_supabase/pages/wrapper/login_page.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_bloc.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_event.dart';
@@ -7,13 +9,18 @@ import 'package:todo_supabase/bloc/auth_bloc/auth_state.dart';
 import 'package:todo_supabase/pages/wrapper/home_page.dart';
 
 class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
+  final Widget child;
+  const AuthWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc()..add(AuthCheck()),
-      child: AuthWrapperView(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AuthBloc()..add(AuthCheck())),
+        BlocProvider(create: (_) => ForgotPasswordBloc()),
+        BlocProvider(create: (_) => ResetPasswordBloc()),
+      ],
+      child: child,
     );
   }
 }
@@ -23,22 +30,31 @@ class AuthWrapperView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-      if (state.status == AuthStatus.loading) {
-        return Center(child: CircularProgressIndicator());
-      }
-      else if (state.isAuthenticated && state.status == AuthStatus.success) {
-        return HomeScreen();
-      }
-      else if (state.status == AuthStatus.failure) {
-        showDialog(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStatus.failure) {
+          showDialog(
             context: context,
-            builder: (context) => AlertDialog(
+            builder:
+                (context) => const AlertDialog(
                   title: Text('Error'),
                   content: Text('Failed to authenticate'),
-                ));
-      }
-      return LoginScreen();
-    });
+                ),
+          );
+        }
+      },
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state.status == AuthStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.isAuthenticated &&
+              state.status == AuthStatus.success) {
+            return const HomeScreen();
+          } else {
+            return const LoginScreen();
+          }
+        },
+      ),
+    );
   }
 }
