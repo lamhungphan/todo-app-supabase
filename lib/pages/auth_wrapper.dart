@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/forgot_password_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_bloc.dart';
-import 'package:todo_supabase/pages/wrapper/login_page.dart';
+import 'package:todo_supabase/pages/views/login/login_provider.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_bloc.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_event.dart';
 import 'package:todo_supabase/bloc/auth_bloc/auth_state.dart';
-import 'package:todo_supabase/pages/wrapper/home_page.dart';
+import 'package:todo_supabase/pages/views/todo/todo_provider.dart';
 
 class AuthWrapper extends StatelessWidget {
-  final Widget child;
-  const AuthWrapper({super.key, required this.child});
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => AuthBloc()..add(AuthCheck())),
-        BlocProvider(create: (_) => ForgotPasswordBloc()),
-        BlocProvider(create: (_) => ResetPasswordBloc()),
-      ],
-      child: child,
+    return BlocProvider(
+      create: (_) => AuthBloc()..add(AuthCheck()),
+      child: const AuthWrapperView(),
     );
   }
 }
@@ -49,9 +42,9 @@ class AuthWrapperView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state.isAuthenticated &&
               state.status == AuthStatus.success) {
-            return const HomeScreen();
+            return const TodoProvider();
           } else {
-            return const LoginScreen();
+            return const LoginProvider();
           }
         },
       ),

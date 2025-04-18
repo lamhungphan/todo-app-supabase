@@ -4,26 +4,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_supabase/bloc/signup_bloc/signup_bloc.dart';
 import 'package:todo_supabase/bloc/signup_bloc/signup_state.dart';
 
-class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SignupBloc(),
-      child: const SignupScreenView(),
-    );
-  }
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class SignupScreenView extends StatefulWidget {
-  const SignupScreenView({super.key});
-
-  @override
-  State<SignupScreenView> createState() => _SignupScreenViewState();
-}
-
-class _SignupScreenViewState extends State<SignupScreenView> {
+class _SignupViewState extends State<SignupView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();

@@ -4,23 +4,14 @@ import 'package:todo_supabase/bloc/password_bloc/forgot_password_bloc.dart';
 import 'package:todo_supabase/bloc/password_bloc/forgot_password_event.dart';
 import 'package:todo_supabase/bloc/password_bloc/forgot_password_state.dart';
 
-class ForgotPassScreen extends StatelessWidget {
-  const ForgotPassScreen({super.key});
+class ForgotPassView extends StatefulWidget {
+  const ForgotPassView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ForgotPassScreenView();
-  }
+  State<ForgotPassView> createState() => _ForgotPassViewState();
 }
 
-class ForgotPassScreenView extends StatefulWidget {
-  const ForgotPassScreenView({super.key});
-
-  @override
-  State<ForgotPassScreenView> createState() => _ForgotPassScreenViewState();
-}
-
-class _ForgotPassScreenViewState extends State<ForgotPassScreenView> {
+class _ForgotPassViewState extends State<ForgotPassView> {
   final _forgotPassController = TextEditingController();
 
   @override

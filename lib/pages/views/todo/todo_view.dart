@@ -5,16 +5,16 @@ import 'package:todo_supabase/bloc/todo_bloc/todo_bloc.dart';
 import 'package:todo_supabase/bloc/todo_bloc/todo_event.dart';
 import 'package:todo_supabase/bloc/todo_bloc/todo_state.dart';
 
-import 'package:todo_supabase/pages/wrapper/login_page.dart';
+import 'package:todo_supabase/pages/views/login/login_provider.dart';
 
-class HomeScreenView extends StatefulWidget {
-  const HomeScreenView({super.key});
+class TodoView extends StatefulWidget {
+  const TodoView({super.key});
 
   @override
-  State<HomeScreenView> createState() => _HomeScreenViewState();
+  State<TodoView> createState() => _TodoViewState();
 }
 
-class _HomeScreenViewState extends State<HomeScreenView> {
+class _TodoViewState extends State<TodoView> {
   final _taskController = TextEditingController();
 
   @override
@@ -44,7 +44,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
               if (mounted) {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  MaterialPageRoute(builder: (_) => const LoginProvider()),
                 );
               }
             },

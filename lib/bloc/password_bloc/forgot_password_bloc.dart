@@ -9,14 +9,12 @@ class ForgotPasswordBloc extends Bloc<ForgotPasswordEvent, PasswordState> {
     on<ForgotPasswordSubmitted>(_onSubmitForgotPassword);
   }
 
-
   void _onEmailChanged(
     ForgotPasswordEmailChanged event,
     Emitter<PasswordState> emit,
   ) {
     emit(state.copyWith(email: event.email, errorMessage: ''));
   }
-
 
   Future<void> _onSubmitForgotPassword(
     ForgotPasswordSubmitted event,
@@ -46,9 +44,7 @@ class ForgotPasswordBloc extends Bloc<ForgotPasswordEvent, PasswordState> {
           ),
         );
       }
-    } catch (e, stack) {
-      print("Reset password failed: $e");
-      print("Stack trace: $stack");
+    } catch (e) {
       emit(
         state.copyWith(
           status: PasswordStatus.failure,

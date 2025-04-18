@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class ResetPassPage extends StatefulWidget {
-  const ResetPassPage({super.key});
+class ResetPassView extends StatefulWidget {
+  const ResetPassView({super.key});
 
   @override
-  State<ResetPassPage> createState() => _ResetPassPageState();
+  State<ResetPassView> createState() => _ResetPassViewState();
 }
 
-class _ResetPassPageState extends State<ResetPassPage> {
+class _ResetPassViewState extends State<ResetPassView> {
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
   bool _obscureText = true;

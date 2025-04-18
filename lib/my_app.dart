@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'router/router.dart';
+import 'package:todo_supabase/pages/auth_wrapper.dart';
 
 // scalable
 class MyApp extends StatelessWidget {
@@ -7,11 +7,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: "Todo Supabase",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      routerConfig: appRouter,
+      home: const AuthWrapper(),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_event.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_state.dart';
+import 'package:todo_supabase/bloc/reset_password_bloc/reset_password_event.dart';
+import 'package:todo_supabase/bloc/reset_password_bloc/reset_password_state.dart';
 import 'dart:async';
 
 class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
@@ -25,7 +25,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent, ResetPasswordState> {
 
     try {
       final supabase = Supabase.instance.client;
-      
+
       // Set session để xác thực qua token
       await supabase.auth.setSession(state.token);
 

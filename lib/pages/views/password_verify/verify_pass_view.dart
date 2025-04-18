@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_event.dart';
-import 'package:todo_supabase/bloc/password_bloc/reset_password_state.dart';
+import 'package:todo_supabase/bloc/reset_password_bloc/reset_password_bloc.dart';
+import 'package:todo_supabase/bloc/reset_password_bloc/reset_password_event.dart';
+import 'package:todo_supabase/bloc/reset_password_bloc/reset_password_state.dart';
 
-class ForgotPassVerifyPage extends StatefulWidget {
+class VerifyPassView extends StatefulWidget {
   final String? token;
-  const ForgotPassVerifyPage({super.key, this.token});
+  const VerifyPassView({super.key, this.token});
 
   @override
-  State<ForgotPassVerifyPage> createState() => _ForgotPassVerifyPageState();
+  State<VerifyPassView> createState() => _VerifyPassViewState();
 }
 
-class _ForgotPassVerifyPageState extends State<ForgotPassVerifyPage> {
+class _VerifyPassViewState extends State<VerifyPassView> {
   final _passController = TextEditingController();
 
   @override
@@ -36,8 +36,17 @@ class _ForgotPassVerifyPageState extends State<ForgotPassVerifyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Reset Password"),
         backgroundColor: Colors.black,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.blueAccent,
+            size: 40,
+          ),
+        ),
       ),
       backgroundColor: Colors.black,
       body: BlocConsumer<ResetPasswordBloc, ResetPasswordState>(
@@ -81,6 +90,22 @@ class _ForgotPassVerifyPageState extends State<ForgotPassVerifyPage> {
                   ),
                   SizedBox(height: 24),
                   FilledButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all<Color>(
+                        const Color.fromARGB(255, 6, 33, 185),
+                      ),
+                      foregroundColor: WidgetStateProperty.all<Color>(
+                        Colors.white,
+                      ),
+                      padding: WidgetStateProperty.all<EdgeInsets>(
+                        EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                     onPressed:
                         state.status == ResetStatus.loading
                             ? null

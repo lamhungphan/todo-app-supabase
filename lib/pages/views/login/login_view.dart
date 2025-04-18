@@ -3,20 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_bloc.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_event.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_state.dart';
-import 'package:todo_supabase/pages/forgot_pass_page.dart';
-import 'package:todo_supabase/pages/forgot_pass_verify_page.dart';
-import 'package:todo_supabase/pages/wrapper/home_page.dart';
-import 'package:todo_supabase/pages/reset_pass_page.dart';
-import 'package:todo_supabase/pages/views/signup_page.dart';
+import 'package:todo_supabase/pages/views/password_forgot/forgot_pass_provider.dart';
+import 'package:todo_supabase/pages/views/password_reset/reset_pass_provider.dart';
+import 'package:todo_supabase/pages/views/password_verify/veriry_pass_provider.dart';
+import 'package:todo_supabase/pages/views/signup/signup_provider.dart';
+import 'package:todo_supabase/pages/views/todo/todo_provider.dart';
 
 class LoginScreenView extends StatefulWidget {
-  const LoginScreenView({super.key});
+  const LoginScreenView.LoginView({super.key});
 
   @override
-  _LoginScreenViewState createState() => _LoginScreenViewState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class _LoginScreenViewState extends State<LoginScreenView> {
+class LoginViewState extends State<LoginScreenView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscureText = true;
@@ -42,7 +42,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
         if (state.status == LoginStatus.success) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => TodoProvider()),
           );
         } else if (state.status == LoginStatus.failure) {
           ScaffoldMessenger.of(
@@ -120,7 +120,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SignupScreen(),
+                          builder: (context) => const SignupProvider(),
                         ),
                       );
                     },
@@ -131,7 +131,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgotPassScreenView(),
+                          builder: (context) => const ForgotPassProvider(),
                         ),
                       );
                     },
@@ -142,7 +142,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ForgotPassVerifyPage(),
+                          builder: (context) => const VeriryPassProvider(),
                         ),
                       );
                     },
@@ -153,7 +153,7 @@ class _LoginScreenViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ResetPassPage(),
+                          builder: (context) => const ResetPassProvider(),
                         ),
                       );
                     },
