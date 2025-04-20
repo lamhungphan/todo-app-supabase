@@ -36,3 +36,17 @@ class SortTodos extends TodoEvent {
   final bool isAscending;
   SortTodos(this.sortBy, this.isAscending);
 }
+
+class EditTodo extends TodoEvent {
+  final String id;
+  final String name;
+  final String description;
+  final String priority;
+
+  EditTodo({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.priority,
+  });
+}

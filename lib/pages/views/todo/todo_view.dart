@@ -22,7 +22,9 @@ class _TodoViewState extends State<TodoView> {
   @override
   void initState() {
     super.initState();
-    context.read<TodoBloc>().add(LoadTodos());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TodoBloc>().add(LoadTodos());
+    });
     _searchController.addListener(() {
       context.read<TodoBloc>().add(SearchTodos(_searchController.text.trim()));
     });
@@ -38,11 +40,20 @@ class _TodoViewState extends State<TodoView> {
   void _addTodo() {
     final name = _nameController.text.trim();
     if (name.isNotEmpty) {
-      context.read<TodoBloc>().add(AddTodo(
-        name: name,
-        priority: 'medium',
-      ));
+      context.read<TodoBloc>().add(AddTodo(name: name, priority: 'medium'));
       _nameController.clear();
+    }
+  }
+
+  void _handleSortChange(TodoSortBy? value) {
+    setState(() {
+      _selectedSortBy = value ?? TodoSortBy.createdAt;
+    });
+
+    if (value != null) {
+      context.read<TodoBloc>().add(SortTodos(value, _isAscending));
+    } else {
+      context.read<TodoBloc>().add(LoadTodos());
     }
   }
 
@@ -69,7 +80,10 @@ class _TodoViewState extends State<TodoView> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: TextField(
               controller: _searchController,
               decoration: const InputDecoration(
@@ -80,46 +94,54 @@ class _TodoViewState extends State<TodoView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: DropdownButton<TodoSortBy>(
-              value: _selectedSortBy,
-              items: TodoSortBy.values.map((sortBy) {
-                return DropdownMenuItem<TodoSortBy>(
-                  value: sortBy,
-                  child: Text(
-                    sortBy == TodoSortBy.createdAt
-                        ? 'Created At'
-                        : sortBy == TodoSortBy.name
-                            ? 'Name'
-                            : 'Priority',
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedSortBy = value;
-                  });
-                  context.read<TodoBloc>().add(SortTodos(value, _isAscending));
-                }
-              },
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               children: [
+                Expanded(
+                  child: DropdownButtonFormField<TodoSortBy?>(
+                    decoration: const InputDecoration(
+                      labelText: 'Sort',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    value: _selectedSortBy,
+                    items: [
+                      const DropdownMenuItem<TodoSortBy?>(
+                        value: null,
+                        child: Text('All'),
+                      ),
+                      ...TodoSortBy.values.map((sortBy) {
+                        return DropdownMenuItem<TodoSortBy?>(
+                          value: sortBy,
+                          child: Text(
+                            sortBy == TodoSortBy.createdAt
+                                ? 'Created at'
+                                : sortBy == TodoSortBy.name
+                                ? 'Name'
+                                : 'Priority',
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                    onChanged: _handleSortChange,
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Checkbox(
                   value: _isAscending,
                   onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _isAscending = value;
-                      });
-                      context
-                          .read<TodoBloc>()
-                          .add(SortTodos(_selectedSortBy, value));
-                    }
+                    setState(() {
+                      _isAscending = value ?? false;
+                    });
+                    context.read<TodoBloc>().add(
+                      SortTodos(_selectedSortBy, _isAscending),
+                    );
                   },
                 ),
                 const Text('Ascending'),
@@ -156,8 +178,8 @@ class _TodoViewState extends State<TodoView> {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () =>
-                              context.read<TodoBloc>().add(LoadTodos()),
+                          onPressed:
+                              () => context.read<TodoBloc>().add(LoadTodos()),
                           child: const Text('Try Again'),
                         ),
                       ],
@@ -176,17 +198,137 @@ class _TodoViewState extends State<TodoView> {
                       subtitle: Text('Priority: ${todo.priority}'),
                       leading: Checkbox(
                         value: todo.isCompleted ?? false,
-                        onChanged: (_) => context.read<TodoBloc>().add(
-                              ToggleTodo(
-                                  todo.id, todo.isCompleted ?? false),
+                        onChanged:
+                            (_) => context.read<TodoBloc>().add(
+                              ToggleTodo(todo.id, todo.isCompleted ?? false),
                             ),
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () =>
-                            context.read<TodoBloc>().add(
-                                  DeleteTodo(todo.id),
-                                ),
+                      trailing: SizedBox(
+                        width: 96,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                final nameController = TextEditingController(
+                                  text: todo.name,
+                                );
+                                final descriptionController =
+                                    TextEditingController(
+                                      text: todo.description,
+                                    );
+                                String selectedPriority =
+                                    todo.priority ?? 'medium';
+                                final todoBloc = context.read<TodoBloc>();
+
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return BlocProvider.value(
+                                      value: todoBloc,
+                                      child: StatefulBuilder(
+                                        builder:
+                                            (context, setState) => AlertDialog(
+                                              title: const Text(
+                                                'Chỉnh sửa công việc',
+                                              ),
+                                              content: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  TextField(
+                                                    controller: nameController,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                          labelText: 'Tên',
+                                                        ),
+                                                  ),
+                                                  TextField(
+                                                    controller:
+                                                        descriptionController,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                          labelText: 'Mô tả',
+                                                        ),
+                                                  ),
+                                                  DropdownButtonFormField<
+                                                    String
+                                                  >(
+                                                    value: selectedPriority,
+                                                    items:
+                                                        [
+                                                          'low',
+                                                          'medium',
+                                                          'high',
+                                                        ].map((priority) {
+                                                          return DropdownMenuItem(
+                                                            value: priority,
+                                                            child: Text(
+                                                              priority
+                                                                  .toUpperCase(),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                    onChanged: (value) {
+                                                      if (value != null) {
+                                                        setState(() {
+                                                          selectedPriority =
+                                                              value;
+                                                        });
+                                                      }
+                                                    },
+                                                    decoration:
+                                                        const InputDecoration(
+                                                          labelText:
+                                                              'Mức độ ưu tiên',
+                                                        ),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed:
+                                                      () =>
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop(),
+                                                  child: const Text('Hủy'),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    context.read<TodoBloc>().add(
+                                                      EditTodo(
+                                                        id: todo.id,
+                                                        name:
+                                                            nameController.text,
+                                                        description:
+                                                            descriptionController
+                                                                .text,
+                                                        priority:
+                                                            selectedPriority,
+                                                      ),
+                                                    );
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Lưu'),
+                                                ),
+                                              ],
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed:
+                                  () => context.read<TodoBloc>().add(
+                                    DeleteTodo(todo.id),
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

@@ -7,7 +7,7 @@ import 'package:todo_supabase/bloc/password_bloc/forgot_pass_state.dart';
 class ForgotPassView extends StatefulWidget {
   const ForgotPassView({super.key});
 
-  @override
+  @override 
   State<ForgotPassView> createState() => _ForgotPassViewState();
 }
 
