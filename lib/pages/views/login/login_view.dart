@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_bloc.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_event.dart';
 import 'package:todo_supabase/bloc/login_bloc/login_state.dart';
-import 'package:todo_supabase/pages/views/password_forgot/forgot_pass_provider.dart';
-import 'package:todo_supabase/pages/views/password_reset/reset_pass_provider.dart';
-import 'package:todo_supabase/pages/views/password_verify/veriry_pass_provider.dart';
+import 'package:todo_supabase/pages/views/password/forgot/forgot_pass_provider.dart';
+import 'package:todo_supabase/pages/views/password/reset/reset_pass_provider.dart';
+import 'package:todo_supabase/pages/views/password/verify/verify_pass_provider.dart';
 import 'package:todo_supabase/pages/views/signup/signup_provider.dart';
 import 'package:todo_supabase/pages/views/todo/todo_provider.dart';
 
@@ -153,7 +153,7 @@ class LoginViewState extends State<LoginScreenView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ResetPassProvider(),
+                          builder: (context) => const ResetPassProvider(token: '',),
                         ),
                       );
                     },

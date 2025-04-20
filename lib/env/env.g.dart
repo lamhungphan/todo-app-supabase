@@ -10,8 +10,8 @@ part of 'env.dart';
 // ignore_for_file: type=lint
 // generated_from: .env
 final class _Env {
-  static const String supabaseUrl = 'https://upaolotgnpbbyrvexmqs.supabase.co';
+  static const String supabaseUrl = 'https://wdkyyamhfjpwjcysnemg.supabase.co';
 
   static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwYW9sb3RnbnBiYnlydmV4bXFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1NDYxOTUsImV4cCI6MjA1ODEyMjE5NX0.ITTRNcy8W2FazRJGQnPqYX-uM_zV4xfe8VmwQTVQAtg';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indka3l5YW1oZmpwd2pjeXNuZW1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI5NzQzOTcsImV4cCI6MjA1ODU1MDM5N30.NioQur7KKIkgmUOqIyeJJ8oZayvO--186B-vstiqPD0';
 }

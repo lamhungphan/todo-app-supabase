@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/forgot_password_bloc.dart';
-import 'package:todo_supabase/bloc/password_bloc/forgot_password_event.dart';
-import 'package:todo_supabase/bloc/password_bloc/forgot_password_state.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_pass_bloc.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_pass_event.dart';
+import 'package:todo_supabase/bloc/password_bloc/forgot_pass_state.dart';
 
 class ForgotPassView extends StatefulWidget {
   const ForgotPassView({super.key});
@@ -20,10 +20,8 @@ class _ForgotPassViewState extends State<ForgotPassView> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: Colors.blueAccent,
             size: 40,
@@ -58,35 +56,41 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
-              BlocConsumer<ForgotPasswordBloc, PasswordState>(
+              const SizedBox(height: 50),
+              BlocConsumer<ForgotPassBloc, PasswordState>(
                 listener: (context, state) {
                   if (state.status == PasswordStatus.loading) {
                     showDialog(
                       context: context,
-                      builder:
-                          (context) => const AlertDialog(
-                            content: Row(
-                              children: [
-                                CircularProgressIndicator(),
-                                SizedBox(width: 10),
-                                Text("Sending reset link..."),
-                              ],
-                            ),
-                          ),
-                    );
-                  } else if (state.status == PasswordStatus.success) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Password reset email sent")),
-                    );
-                  } else if (state.status == PasswordStatus.failure) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.errorMessage ?? "Unknown error"),
+                      barrierDismissible: false,
+                      builder: (context) => const AlertDialog(
+                        content: Row(
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(width: 10),
+                            Text("Sending reset link..."),
+                          ],
+                        ),
                       ),
                     );
+                  } else {
+                    // Always close loading dialog if open
+                    Navigator.of(context, rootNavigator: true).pop();
+
+                    if (state.status == PasswordStatus.codeSent) {
+                      // Navigate to the OTP screen
+                      Navigator.pushNamed(context, '/verify');
+                    } else if (state.status == PasswordStatus.failure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            state.errorMessage.isNotEmpty
+                                ? state.errorMessage
+                                : "Unknown error",
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
                 builder: (context, state) {
@@ -94,15 +98,17 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                     onPressed: () {
                       final email = _forgotPassController.text.trim();
                       if (email.isNotEmpty) {
-                        context.read<ForgotPasswordBloc>().add(
-                          ForgotPasswordEmailChanged(email),
-                        );
-                        context.read<ForgotPasswordBloc>().add(
-                          ForgotPasswordSubmitted(),
-                        );
+                        context.read<ForgotPassBloc>().add(
+                              ForgotPassEmailChanged(email),
+                            );
+                        context.read<ForgotPassBloc>().add(
+                              ForgotPassSubmitted(),
+                            );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Please enter a valid email")),
+                          const SnackBar(
+                            content: Text("Please enter a valid email"),
+                          ),
                         );
                       }
                     },
@@ -114,7 +120,7 @@ class _ForgotPassViewState extends State<ForgotPassView> {
                         Colors.white,
                       ),
                       padding: WidgetStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(vertical: 16),
+                        const EdgeInsets.symmetric(vertical: 16),
                       ),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
